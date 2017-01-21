@@ -8,50 +8,74 @@
 
 import UIKit
 
-class DictionaryTableViewCell: UITableViewCell {
-    @IBOutlet weak var DictionaryHeadline: UILabel!
+class DictionaryTableViewController: UITableViewController, UISearchResultsUpdating {
     
-}
-
-class DictionaryTableViewController: UITableViewController {
+    // Arrays für zu durchsuchende Elemente und gefundene Elemente anlegen
+    var usecases = ["Autounfall", "Zugverspätung", "Zugausfall"]
+    var filteredUsecases = [String] ()
     
-    override func viewWillAppear(_ animated: Bool) {
-        self.tableView.separatorStyle = .none
-        self.view.backgroundColor = UIColor(red: 230/255, green: 230/255, blue: 230/255, alpha: 1.0)
-        
-    }
+    var searchController : UISearchController!
+    var resultsController = UITableViewController()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
+        // Bei Eintippen in Suchleiste wird TableView quasi durch neue TableView ersetzt (für die der ResultsController zuständig ist)
+        self.searchController = UISearchController(searchResultsController: self.resultsController)
         
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+        // Resultscontroller mitteilen, wo er nach den Daten schauen soll
+        self.resultsController.tableView.dataSource = self
+        self.resultsController.tableView.delegate = self
+        
+        // Suchleiste im Header einfügen
+        self.tableView.tableHeaderView = self.searchController.searchBar
+        
+        // Zuständig für Update der Ergebnisse nach Eingabe in Suchleiste
+        self.searchController.searchResultsUpdater = self
+        
+        // Animationseinstellungen
+        self.searchController.hidesNavigationBarDuringPresentation = false
+        self.searchController.dimsBackgroundDuringPresentation = false
+        definesPresentationContext = true
     }
     
-    
-    
-    // MARK: - Table view data source
-    
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 1
+    // Funktion, die bei jeder Eingabe in Suchleiste aufgerufen wird
+    func updateSearchResults(for searchController: UISearchController) {
+        // Alle Elemente durchsuchen und Ergebnisse in Filterarray speichern
+        self.filteredUsecases = self.usecases.filter { (usecase:String) -> Bool in
+            if usecase.lowercased().contains(self.searchController.searchBar.text!.lowercased()) {
+                return true
+            } else {
+                return false
+            }
+        }
+        // TableView mit Ergebnissen updaten
+        self.resultsController.tableView.reloadData()
     }
     
+    // Anzahl der Reihen in TableView festlegen
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return 1
+        if tableView == self.tableView {
+            return self.usecases.count
+        } else {
+            return self.filteredUsecases.count
+        }
     }
     
+    // Elemente aus jeweiligem Array in jeweils eine Reihe der TableView schreiben
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "DictionaryTableViewCell", for: indexPath) as! DictionaryTableViewCell
-        
-        cell.DictionaryHeadline?.text = "Autounfall"
-        
+        let cell = UITableViewCell()
+        if tableView == self.tableView {
+            cell.textLabel?.text = self.usecases[indexPath.row]
+        } else {
+            cell.textLabel?.text = self.filteredUsecases[indexPath.row]
+        }
         return cell
     }
     
+    /*// Funktion, die bei Auswahl eines Usecases aufgerufen wird
+     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+     
+     }*/
     
 }
