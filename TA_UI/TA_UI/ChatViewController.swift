@@ -187,9 +187,6 @@ class ChatViewController: JSQMessagesViewController, UIImagePickerControllerDele
                     self.sendLocation(location: self.location)
                     self.getAdress()
                     self.locationManager.stopUpdatingLocation() // Location Update stoppen, um Akku zu sparen
-                    
-                   
-                    
                 } else {
                     print ("Location Service is not available")
                 }
@@ -201,7 +198,6 @@ class ChatViewController: JSQMessagesViewController, UIImagePickerControllerDele
         alertController.addAction(cancelAction)
         
         present(alertController, animated: true, completion: nil)
-
     }
     
     // Ausgewähltes Foto in Chat anzeigen
@@ -229,14 +225,13 @@ class ChatViewController: JSQMessagesViewController, UIImagePickerControllerDele
     
     // Location im Chat anzeigen
     func sendLocation (location: CLLocation) {
-        //let locationMsg = JSQLocationMediaItem(location: location)
         let locationMsg = JSQLocationMediaItem(location: nil)
         locationMsg?.setLocation(location, withCompletionHandler: { 
             self.addMediaMessage(withId: self.senderId, name: self.senderDisplayName, media: locationMsg!)
             self.finishSendingMessage(animated: true)
             self.dismiss(animated: true, completion: nil)
         })
-        
+
         //Add message to let API know location has been sent
         self.api.sendRequest(request: "LOCATIONSEND") { (result) -> Void in
             self.showTypingIndicator = 	false

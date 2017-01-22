@@ -80,9 +80,15 @@ class DictionaryTableViewController: UITableViewController, UISearchResultsUpdat
         return cell
     }
     
-    /*// Funktion, die bei Auswahl eines Usecases aufgerufen wird
+    // Funktion, die bei Klick auf einen Usecase aufgerufen wird
      override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-     
-     }*/
+        // Zur Detailansicht wechseln
+        self.performSegue(withIdentifier: "ShowDetails", sender: indexPath)
+     }
+    
+    // Daten an die Detailansicht übergeben
+    /*override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        ...
+    }*/
     
 }
